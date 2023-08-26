@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Time Tracking System</title>
+		{% load static %}
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+				integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+				crossorigin="anonymous"></script>
+		<link href="{% static 'tracking/mainpage.css' %}" rel="stylesheet" type="text/css">
+    </head>
+
+	<script>
+		// START CLOCK SCRIPT
+		Number.prototype.pad = function(n) {
+		  for (var r = this.toString(); r.length < n; r = 0 + r);
+		  return r;
+		};
+
+		function updateClock() {
+		  var now = new Date();
+		  var milli = now.getMilliseconds(),
+			sec = now.getSeconds(),
+			min = now.getMinutes(),
+			hou = now.getHours(),
+			mo = now.getMonth(),
+			dy = now.getDate(),
+			yr = now.getFullYear();
+		  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+		  var tags = ["mon", "d", "y", "h", "m", "s", "mi"],
+			corr = [months[mo], dy, yr, hou.pad(2), min.pad(2), sec.pad(2), milli];
+		  for (var i = 0; i < tags.length; i++)
+			document.getElementById(tags[i]).firstChild.nodeValue = corr[i];
+		}
+
+		function initClock() {
+		  updateClock();
+		  window.setInterval("updateClock()", 1);
+		}
+
+		// END CLOCK SCRIPT
+	</script>
+
+	<body onLoad="initClock()">
+	<div class = "stacked-divs">
+
+	  <div id="timedate">
+		<a id="mon">January</a>
+		<a id="d">1</a>,
+		<a id="y">0</a><br />
+		<a id="h">12</a> :
+		<a id="m">00</a>:
+		<a id="s">00</a>
+		<a hidden id="mi">000</a>
+	  </div>
+
+		<div class ="align-left">
+			<form method="post" action="{% url 'logout' %}">
+        	{% csrf_token %}
+        	<button type="submit" class="outline">Logout</button>
+    </form>
+	    </div>
+
+		<p class ="align-left">{{request.user.first_name}}'s Working Hours: {{ total_working_time|default:"0:00:00" }}</p>
+
+		<div class ="align-left">
+			<button id="start-btn" class="start-btn"{% if has_started %}disabled{% endif %}>
+				{% if has_started %}Started Working{% else %}Start Working{% endif %}
+			</button>
+            <button id="end-btn" class="start-btn"{% if not has_started %}disabled{% endif %}>
+				{% if has_started %}End Working{% else %}Ended Working{% endif %}
+			</button>
+			{% csrf_token %}
+		</div>
+
+		<p class ="align-left">Accumulated Salary: ${{ accumulated_salary|default:"0.00"|floatformat:"2" }}</p>
+
+
+		<script>
+			const startBtn = document.getElementById('start-btn');
+			const endBtn = document.getElementById('end-btn');
+
+			// Get the CSRF token from the cookie
+			const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+			startBtn.addEventListener('click', () => {
+				fetch("{% url 'start_work' %}", {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': csrfToken  // Include the CSRF token in the headers
+					}
+				}).then(() => {
+					startBtn.disabled = true;
+					endBtn.disabled = false;
+					startBtn.textContent = "Started Working"; // Change button text
+					endBtn.textContent = "End Working";
+				});
+			});
+
+			endBtn.addEventListener('click', () => {
+				fetch("{% url 'end_work' %}", {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': csrfToken  // Include the CSRF token in the headers
+					}
+				}).then(() => {
+					startBtn.disabled = false;
+					endBtn.disabled = true;
+					startBtn.textContent = "Start Working"; // Reset start button text
+            		endBtn.textContent = "Ended Working"; // Change button text
+					location.reload();
+				});
+			});
+		</script>
+
+
+	</div>
+	</body>
+
+</html>

@@ -1,0 +1,139 @@
+@media (max-width: 767px) {
+    /* Adjust font sizes for better readability on smaller screens */
+    body {
+        font-size: 14px;
+    }
+
+    /* Center align content on mobile */
+    .stacked-divs {
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Adjust margins and paddings for better spacing */
+    #timedate {
+        padding: 10px;
+    }
+
+    /* Make buttons full width for mobile */
+    button.outline {
+        width: 100%;
+        padding: 8px 20px;
+        font-size: 12px;
+    }
+
+    /* Adjust spacing between elements */
+    p {
+        margin: 10px 0;
+    }
+}
+
+html, body {
+  --size: 1.5rem;
+  background-color:#2d2d2d;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: Palatino, Helvetica, arial, sans-serif;
+  overflow: hidden;
+}
+
+.stacked-divs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Set to 100% to take the full width */
+  margin-top: 20px; /* Adjust margin-top to control spacing */
+
+}
+
+.align-left {
+  text-align:left;
+  width: 80%; /* Set to 100% to take the full width */
+  margin: 15px 0; /* Adjust margin values to control spacing */
+}
+
+p{
+  font: small-caps lighter 33px/150% "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+  color:#fff;
+  border-left: 3px solid #f69679;
+  padding: 15px;
+}
+
+/*Clock*/
+#timedate {
+  font: small-caps lighter 33px/150% "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+  text-align:left;
+  width: 80%; /* Set to 100% to take the full width */
+  margin: 20px 0; /* Adjust margin values to control spacing */
+  color:#fff;
+  border-left: 3px solid #f69679;
+  padding: 15px;
+}
+
+/*Button*/
+/*outline button*/
+button {
+  cursor: pointer;
+  outline: none;
+    &.outline {
+        position: relative;
+        z-index: 3;
+        background: transparent;
+        color: #f69679;
+        font-size: 14px;
+        border-color: #f69679;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 22px;
+        padding: 10px 40px;
+        text-transform: uppercase;
+        transition: all 0.2s linear;
+        a {
+            text-decoration: none;
+        }
+    }
+    &.outline:hover {
+        color: white;
+        background: #f69679;
+        border-color: #333;
+        transition: all 0.2s linear;
+    }
+    &.outline:active {
+        border-radius: 22px;
+    }
+
+  start-btn:none;
+    &.start-btn{
+        position: relative;
+        z-index: 3;
+        background: transparent;
+        color: #f69679;
+        font-size: 14px;
+        border-color: #f69679;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 22px;
+        padding: 10px 40px;
+        text-transform: uppercase;
+        transition: all 0.2s linear;
+    }
+    &.start-btn:active {
+        border-radius: 22px;
+    }
+    &.start-btn:disabled {
+        cursor: not-allowed;
+        color: white;
+        background: #f69679;
+        border-color: #333;
+        transition: all 0.2s linear;
+    }
+
+
+}

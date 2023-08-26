@@ -12,11 +12,13 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 
 from tracking.form import LoginForm, RegisterForm
+from tracking.models import TimeEntry, TotalTime
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib import messages
 import json
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, F
+import datetime
 
 def login_action(request):
     context = {}
@@ -90,9 +92,49 @@ def _my_json_error_response(message, status=200):
 
 
 @login_required
-@ensure_csrf_cookie
 def mainpage_action(request):
-
     if request.method == 'GET':
-        return render(request, 'tracking/mainpage.html')
+        user = request.user
+        last_entry = TimeEntry.objects.filter(user=user).order_by('-start_time').first()
+        has_started = last_entry and last_entry.end_time is None
 
+        total_working_time_timedelta = TimeEntry.objects.filter(user=user, end_time__isnull=False).aggregate(
+            total_time=Sum(F('end_time') - F('start_time')))['total_time'] or datetime.timedelta(seconds=0)
+        total_working_time_seconds = total_working_time_timedelta.total_seconds()
+        hours, remainder = divmod(total_working_time_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        total_working_time_formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+        hourly_rate = 80
+        accumulated_salary = (total_working_time_seconds / 3600) * hourly_rate
+
+        context = {
+            'has_started': has_started,
+            'total_working_time': total_working_time_formatted,
+            'accumulated_salary': accumulated_salary,
+        }
+
+        return render(request, 'tracking/mainpage.html', context)
+
+@login_required
+def start_work(request):
+    if request.method == 'POST':
+        TimeEntry.objects.create(user=request.user, start_time=timezone.now())
+
+    return redirect('mainpage')
+
+@login_required
+def end_work(request):
+    if request.method == 'POST':
+        entry = TimeEntry.objects.filter(user=request.user, end_time__isnull=True).order_by('-start_time').first()
+        if entry:
+            entry.end_time = timezone.now()
+            entry.save()
+
+    return redirect('mainpage')
+
+@login_required
+def total_working_time(self):
+    entries = TimeEntry.objects.filter(user=self)
+    total_time = sum((entry.end_time - entry.start_time).total_seconds() for entry in entries if entry.end_time)
+    return total_time
