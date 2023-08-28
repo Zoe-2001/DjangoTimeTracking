@@ -1,23 +1,19 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils import timezone,formats
+from django.utils import timezone
 
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404, JsonResponse
+from django.shortcuts import render
+from django.http import HttpResponse
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-
 from django.contrib.auth.models import User
 
 from tracking.form import LoginForm, RegisterForm
 from tracking.models import TimeEntry, TotalTime
 
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.contrib import messages
-import json
-from django.db.models import Count, Sum, F
+from django.conf import settings
+from django.db.models import Sum, F
 import datetime
 
 def login_action(request):
@@ -103,9 +99,9 @@ def mainpage_action(request):
         total_working_time_seconds = total_working_time_timedelta.total_seconds()
         hours, remainder = divmod(total_working_time_seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
-        total_working_time_formatted = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+        total_working_time_formatted = f"{int(hours):02}:{int(minutes):02}"
 
-        hourly_rate = 80
+        hourly_rate = settings.HOURLY_RATE
         accumulated_salary = (total_working_time_seconds / 3600) * hourly_rate
 
         context = {

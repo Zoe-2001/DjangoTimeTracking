@@ -50,8 +50,8 @@
 		<a id="d">1</a>,
 		<a id="y">0</a><br />
 		<a id="h">12</a> :
-		<a id="m">00</a>:
-		<a id="s">00</a>
+		<a id="m">00</a>
+		<a hidden id="s">00</a>
 		<a hidden id="mi">000</a>
 	  </div>
 
@@ -62,7 +62,7 @@
     </form>
 	    </div>
 
-		<p class ="align-left">{{request.user.first_name}}'s Working Hours: {{ total_working_time|default:"0:00:00" }}</p>
+		<p class ="align-left">{{request.user.first_name}}'s Working Hours: {{ total_working_time|default:"0:00" }}</p>
 
 		<div class ="align-left">
 			<button id="start-btn" class="start-btn"{% if has_started %}disabled{% endif %}>
